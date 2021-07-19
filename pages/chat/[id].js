@@ -19,7 +19,6 @@ export default function Chat({ chat, messages }) {
     setWidth(window.innerWidth);
     setHeight(window.innerHeight);
   };
-  console.log(width);
   useEffect(() => {
     window.addEventListener("resize", updateDimensions);
     return () => window.removeEventListener("resize", updateDimensions);

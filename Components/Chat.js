@@ -7,7 +7,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
 
 export default function Chat({ id, users }) {
-  console.log(users);
   const router = useRouter();
   const [user] = useAuthState(auth);
   const recipientEmail = getRecipientEmail(users, user);
