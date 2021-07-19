@@ -4,6 +4,11 @@ import styled from "styled-components";
 import { auth, provider } from "../firebase";
 
 export default function login() {
+  //  getting a value for a vh unit
+  let vh = window.innerHeight * 0.01;
+  // Then we set the value in the --vh custom property to the root of the document
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+
   const signIn = () => {
     auth.signInWithPopup(provider).catch(alert);
   };
@@ -26,7 +31,8 @@ export default function login() {
 const Container = styled.div`
   display: grid;
   place-items: center;
-  height:94vh;
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
   background-color: whitesmoke;
 `;
 

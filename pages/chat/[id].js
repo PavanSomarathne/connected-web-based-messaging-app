@@ -15,6 +15,12 @@ export default function Chat({ chat, messages }) {
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
   const [isOpen, setIsOpen] = useState(false);
+
+  //  getting a value for a vh unit
+  let vh = window.innerHeight * 0.01;
+  //etting the value in the --vh custom property to the root of the document
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+
   const updateDimensions = () => {
     setWidth(window.innerWidth);
     setHeight(window.innerHeight);
@@ -88,7 +94,8 @@ const Panel = styled.div`
 
 const Container = styled.div`
   display: flex;
-  height:94vh;
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
 `;
 
 const ChatContainer = styled.div`
