@@ -26,7 +26,7 @@ export default function login() {
 const Container = styled.div`
   display: grid;
   place-items: center;
-  height: 100vh;
+  height:94vh;
   background-color: whitesmoke;
 `;
 

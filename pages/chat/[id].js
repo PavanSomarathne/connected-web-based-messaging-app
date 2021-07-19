@@ -88,6 +88,7 @@ const Panel = styled.div`
 
 const Container = styled.div`
   display: flex;
+  height:94vh;
 `;
 
 const ChatContainer = styled.div`

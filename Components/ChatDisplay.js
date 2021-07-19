@@ -12,7 +12,7 @@ import firebase from "firebase";
 import { useRef, useState } from "react";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import TimeAgo from "timeago-react";
-import MicIcon from "@material-ui/icons/Mic";
+import SendIcon from '@material-ui/icons/Send';
 export default function ChatDisplay({ chat, messages }) {
   const [user] = useAuthState(auth);
   const [input, setInput] = useState("");
@@ -128,10 +128,11 @@ export default function ChatDisplay({ chat, messages }) {
       <InputContainer>
         <InsertEmoticonIcon />
         <Input value={input} onChange={(e) => setInput(e.target.value)} />
-        <button hidden disabled={!input} type="submit" onClick={sendMsg}>
+        <button hidden >
           Send message
         </button>
-        <MicIcon />
+        <IconButton disabled={!input}><SendIcon  type="submit" onClick={sendMsg} /></IconButton>
+        
       </InputContainer>
     </Container>
   );
