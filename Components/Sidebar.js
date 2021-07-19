@@ -16,7 +16,10 @@ export default function Sidebar() {
     .collection("chats")
     .where("users", "array-contains", user.email);
   const [chatSnapshot] = useCollection(userChatRef);
-
+//  getting a value for a vh unit
+let vh = window.innerHeight * 0.01;
+//etting the value in the --vh custom property to the root of the document
+document.documentElement.style.setProperty("--vh", `${vh}px`);
   const createChat = () => {
     const input = prompt("Enter email");
     if (!input) return null;
@@ -65,7 +68,8 @@ export default function Sidebar() {
 const Container = styled.div`
   flex: 0.45;
   border-right: 1px solid whitesmoke;
-  height: 100vh;
+  height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+  height: calc(var(--vh, 1vh) * 100);
   min-width: 300px;
   max-width: 350px;
   overflow: auto;
