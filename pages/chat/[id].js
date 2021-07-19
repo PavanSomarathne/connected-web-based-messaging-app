@@ -1,63 +1,104 @@
 import Head from "next/head";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
 import ChatDisplay from "../../Components/ChatDisplay";
 import Sidebar from "../../Components/Sidebar";
-import { db,auth } from "../../firebase";
+import { db, auth } from "../../firebase";
 import getRecipientEmail from "../../utils/getRecipientEmail";
+import ArrowForwardIosIcon from "@material-ui/icons/ArrowForwardIos";
+import { IconButton } from "@material-ui/core";
+import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 
-export default function Chat({chat,messages}) {
+export default function Chat({ chat, messages }) {
+  const [user] = useAuthState(auth);
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+  const [isOpen, setIsOpen] = useState(false);
+  const updateDimensions = () => {
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
+  };
+  console.log(width);
+  useEffect(() => {
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
 
-    const [user]=useAuthState(auth);
-
-    return (
-        <Container>
-            <Head>
-                <title>Chat with {getRecipientEmail(chat.users,user)}</title>
-            </Head>
-            <Sidebar />
-            <ChatContainer>
-                <ChatDisplay chat={chat} messages={messages}/>
-                </ChatContainer>
-        </Container>
-    )
+  const breakpoint = 768;
+  return (
+    <Container>
+      <Head>
+        <title>Chat with {getRecipientEmail(chat.users, user)}</title>
+      </Head>
+      {width <= breakpoint ? (
+        <>
+          <Panel>
+            <div style={{ backgroundColor: "transparent" }}>
+              <IconButton onClick={() => setIsOpen(isOpen ? false : true)}>
+                {isOpen ? <ArrowBackIosIcon /> : <ArrowForwardIosIcon />}
+              </IconButton>
+            </div>
+          </Panel>
+          {isOpen ? <Sidebar /> : null}
+        </>
+      ) : (
+        <Sidebar />
+      )}
+      <ChatContainer>
+        <ChatDisplay chat={chat} messages={messages} />
+      </ChatContainer>
+    </Container>
+  );
 }
 
-export async function getServerSideProps(context){
-    const ref=db.collection("chats").doc(context.query.id);
-    //create messages on server
-    const messagesRes=await ref.collection("messages").orderBy('timestamp','asc').get();
+export async function getServerSideProps(context) {
+  const ref = db.collection("chats").doc(context.query.id);
+  //create messages on server
+  const messagesRes = await ref
+    .collection("messages")
+    .orderBy("timestamp", "asc")
+    .get();
 
-    const messages=messagesRes.docs.map(doc=>({id:doc.id,...doc.data()})).map((messages => ({
-        ...messages,timestamp:messages.timestamp.toDate().getTime()
-    })))
+  const messages = messagesRes.docs
+    .map((doc) => ({ id: doc.id, ...doc.data() }))
+    .map((messages) => ({
+      ...messages,
+      timestamp: messages.timestamp.toDate().getTime(),
+    }));
 
-    //create chats
-    const chatsRes=await ref.get();
-    const chat={
-        id:chatsRes.id,
-        ...chatsRes.data(),
-    }
-    return{
-    props:{
-        messages:JSON.stringify(messages),
-        chat:chat
-    }
-    }
+  //create chats
+  const chatsRes = await ref.get();
+  const chat = {
+    id: chatsRes.id,
+    ...chatsRes.data(),
+  };
+  return {
+    props: {
+      messages: JSON.stringify(messages),
+      chat: chat,
+    },
+  };
 }
+const Panel = styled.div`
+  display: flex;
+  direction: column;
+  background-color: whitesmoke;
+  align-items: center;
+`;
 
 const Container = styled.div`
-display: flex;
+  display: flex;
 `;
 
 const ChatContainer = styled.div`
-flex: 1;
-overflow: scroll;
-height: 100vh ;
+  flex: 1;
+  overflow: scroll;
+  height: 100vh;
 
-::-webkit-scrollbar {
+  ::-webkit-scrollbar {
     display: none;
-}
---ms-overflow-style: none; /*IE and Edge*/
-	scrollbar-width: none; /*Firefox*/
+  }
+  --ms-overflow-style: none; /*IE and Edge*/
+  scrollbar-width: none; /*Firefox*/
 `;
